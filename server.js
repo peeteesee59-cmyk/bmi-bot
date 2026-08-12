@@ -3,7 +3,7 @@ const app = express();
 
 app.use(express.json());
 
-// ความจำชั่วคราวระหว่างการสนทนา (จะถูกล้างทิ้งทันทีที่คำนวณเสร็จ)
+// ความจำชั่วคราวระหว่างการสนทนา (ล้างทิ้งทันทีเมื่อคำนวณเสร็จ)
 const sessionStore = {};
 
 app.post('/', (req, res) => {
@@ -29,7 +29,7 @@ app.post('/', (req, res) => {
   const { weight, height, age, gender } = sessionStore[userId];
 
   // ==========================================
-  // 1. คำนวณ BMI (ถามทีละอย่าง: น้ำหนัก -> ส่วนสูง)
+  // 1. คำนวณ BMI (ถามทีละอย่าง)
   // ==========================================
   if (intentName.includes('BMI')) {
     if (!weight) {
@@ -39,7 +39,6 @@ app.post('/', (req, res) => {
       return res.json({ fulfillmentText: "กรุณาระบุ **ส่วนสูง (ซม.)** ของคุณครับ ✨" });
     }
 
-    // ได้ข้อมูลครบแล้ว -> คำนวณผลลัพธ์
     const heightM = height / 100;
     const bmi = (weight / (heightM * heightM)).toFixed(2);
 
@@ -50,7 +49,7 @@ app.post('/', (req, res) => {
     else if (bmi <= 29.9) resultText = "อ้วนระดับ 1 🚨";
     else resultText = "อ้วนระดับ 2 (เสี่ยงโรคเรื้อรัง) ❌";
 
-    // คำนวณเสร็จแล้ว ล้างความจำออกทันที เพื่อให้ครั้งหน้าเริ่มใหม่สดๆ
+    // ล้างข้อมูลทันทีเมื่อคำนวณจบ
     sessionStore[userId] = { weight: null, height: null, age: null, gender: null };
 
     return res.json({
@@ -59,7 +58,7 @@ app.post('/', (req, res) => {
   }
 
   // ==========================================
-  // 2. คำนวณ BMR (ถามทีละอย่าง: เพศ -> อายุ -> ส่วนสูง -> น้ำหนัก)
+  // 2. คำนวณ BMR (ถามทีละอย่าง)
   // ==========================================
   if (intentName.includes('BMR')) {
     if (!gender) {
@@ -75,7 +74,6 @@ app.post('/', (req, res) => {
       return res.json({ fulfillmentText: "กรุณาระบุ **น้ำหนัก (กก.)** ของคุณครับ ✨" });
     }
 
-    // ได้ข้อมูลครบแล้ว -> คำนวณ BMR
     let bmr = (10 * weight) + (6.25 * height) - (5 * age);
     if (gender.includes('female') || gender.includes('หญิง')) {
       bmr -= 161;
@@ -86,7 +84,7 @@ app.post('/', (req, res) => {
 
     const genderText = (gender.includes('female') || gender.includes('หญิง')) ? 'หญิง' : 'ชาย';
 
-    // คำนวณเสร็จแล้ว ล้างความจำออกทันที
+    // ล้างข้อมูลทันทีเมื่อคำนวณจบ
     sessionStore[userId] = { weight: null, height: null, age: null, gender: null };
 
     return res.json({
@@ -95,7 +93,7 @@ app.post('/', (req, res) => {
   }
 
   // ==========================================
-  // 3. คำนวณ TDEE (ถามทีละอย่าง: เพศ -> อายุ -> ส่วนสูง -> น้ำหนัก)
+  // 3. คำนวณ TDEE (ถามทีละอย่าง)
   // ==========================================
   if (intentName.includes('TDEE')) {
     if (!gender) {
@@ -111,7 +109,6 @@ app.post('/', (req, res) => {
       return res.json({ fulfillmentText: "กรุณาระบุ **น้ำหนัก (กก.)** ของคุณครับ ✨" });
     }
 
-    // ได้ข้อมูลครบแล้ว -> คำนวณ TDEE
     let bmr = (10 * weight) + (6.25 * height) - (5 * age);
     if (gender.includes('female') || gender.includes('หญิง')) {
       bmr -= 161;
@@ -122,7 +119,7 @@ app.post('/', (req, res) => {
     const tdee = Math.round(bmr * 1.375);
     const genderText = (gender.includes('female') || gender.includes('หญิง')) ? 'หญิง' : 'ชาย';
 
-    // คำนวณเสร็จแล้ว ล้างความจำออกทันที
+    // ล้างข้อมูลทันทีเมื่อคำนวณจบ
     sessionStore[userId] = { weight: null, height: null, age: null, gender: null };
 
     return res.json({
@@ -133,6 +130,6 @@ app.post('/', (req, res) => {
   return res.json({});
 });
 
+// บรรทัดสั่งเปิด Server (มีเพียงบรรทัดเดียวเท่านั้นล่างสุด!)
 const PORT = process.env.PORT || 10000;
-app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
