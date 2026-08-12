@@ -6,13 +6,12 @@ app.use(express.json());
 app.post('/', (req, res) => {
   const parameters = req.body.queryResult && req.body.queryResult.parameters;
   
-  const weight = parameters ? parameters.weight : null;
-  const heightCm = parameters ? parameters.height : null;
+  const weight = parameters ? parseFloat(parameters.weight) : null;
+  const heightCm = parameters ? parseFloat(parameters.height) : null;
 
-  if (!weight || !heightCm) {
-    return res.json({
-      fulfillmentText: 'รบกวนระบุทั้งส่วนสูง (ซม.) และน้ำหนัก (กก.) ให้ครบด้วยนะครับ'
-    });
+  // ถ้าค่าที่ส่งมาไม่ใช่ตัวเลข หรือส่งมาไม่ครบ ไม่ต้องตอบอะไรขัดจังหวะ
+  if (!weight || !heightCm || isNaN(weight) || isNaN(heightCm)) {
+    return res.json({});
   }
 
   const heightM = heightCm / 100;
