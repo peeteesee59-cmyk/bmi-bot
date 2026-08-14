@@ -115,7 +115,7 @@ app.post('/', (req, res) => {
     // 💧 ส่วนที่ 4: คำนวณปริมาณน้ำดื่ม (เพิ่มใหม่!)
     // ==========================================
     // รองรับชื่อ Intent ที่มีคำว่า 'เปิดการแจ้งเตือนการดื่มน้ำ '
-    if (intentName.includes('น้ำ') || intentName.toLowerCase().includes('water')) {
+    if (intentName.includes('เปิดการแจ้งเตือนการดื่มน้ำ') || intentName.toLowerCase().includes('water')) {
       if (!weight) return res.json({ fulfillmentText: "กรุณาระบุ **น้ำหนัก (กก.)** ของคุณ เพื่อคำนวณปริมาณน้ำดื่มที่เหมาะสมครับ 💧" });
 
       // สูตร: น้ำหนักตัว (กก.) x 33 = ปริมาณน้ำ (มิลลิลิตร)
